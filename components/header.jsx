@@ -44,7 +44,7 @@ const Header = () => {
             </Link>
           </SignedIn>
 
-          <SignedOut> 
+          <SignedOut>
             <SignInButton forceRedirectUrl="/dashboard">
               <Button>Login</Button>
             </SignInButton>
