@@ -1,6 +1,7 @@
 import { Geist, Geist_Mono, Inter } from "next/font/google";
 import "./globals.css";
 import Header from "@/components/header";
+import { ClerkProvider } from '@clerk/nextjs'
 
 const inter = Inter({ subset: ["latin"] });
 
@@ -11,6 +12,7 @@ export const metadata = {
 
 export default function RootLayout({ children }) {
   return (
+  <ClerkProvider>
     <html lang="en">
       <body className={`${inter.className}`}>
         {/* header  */}
@@ -23,5 +25,6 @@ export default function RootLayout({ children }) {
         </footer>
       </body>
     </html>
+  </ClerkProvider>
   );
 }
