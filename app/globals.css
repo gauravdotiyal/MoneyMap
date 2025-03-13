@@ -127,7 +127,7 @@
 
 @layer utilities {
   .gradient-title {
-    @apply bg-gradient-to-br from-blue-600 to-purple-600 font-extrabold tracking-tighter pr-2 pb-2 text-transparent bg-clip-text;
+    @apply bg-gradient-to-br from-green-600 to-blue-400 font-extrabold tracking-tighter pr-2 pb-2 text-transparent bg-clip-text;
   }
 }
 
