@@ -16,13 +16,17 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { accountSchema } from "@/app/lib/schema";
 import { Input } from "./ui/input";
 import { Switch } from "./ui/switch";
 import { Button } from "./ui/button";
+import useFetch from "@/hooks/useFetch";
+import { createAccount } from "@/actions/dashboard";
+import { Loader2 } from "lucide-react";
+import { toast } from "sonner";
 
 const CreateAccountDrawer = ({ children }) => {
   const [open, setOpen] = useState(false);
@@ -44,8 +48,29 @@ const CreateAccountDrawer = ({ children }) => {
     },
   });
 
+  const {
+    data: newAccount,
+    error,
+    fn: createAccountFn,
+    loading: createAccountLoading,
+  } = useFetch(createAccount);
+
+  useEffect(()=>{
+    if(newAccount && !createAccountLoading){
+        toast.success("Account created successfully");
+        reset();            
+        setOpen(false);
+    } 
+  },[createAccountLoading,newAccount])
+
+  useEffect(()=>{
+     if(error){
+        toast.error(error.message || "Failed to create Account");
+     }
+  },[error])
+
   const onSubmit = async (data) => {
-    console.log(data);
+    await createAccountFn(data);
   };
 
   return (
@@ -137,8 +162,19 @@ const CreateAccountDrawer = ({ children }) => {
                 </Button>
               </DrawerClose>
 
-              <Button type="submit" className="flex-1 mx-2">
-                Create Account
+              <Button
+                type="submit"
+                className="flex-1 mx-2"
+                disabled={createAccountLoading}
+              >
+                {createAccountLoading ? (
+                  <>
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                    Creating..{" "}
+                  </>
+                ) : (
+                  "Create Account"
+                )}
               </Button>
             </div>
           </form>
