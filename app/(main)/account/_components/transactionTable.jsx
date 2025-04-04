@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useMemo, useState } from "react";
 import {
   Tooltip,
   TooltipContent,
@@ -60,8 +60,6 @@ const RECCURING_INTERVAL = {
 };
 
 const TransactionTable = ({ transactions }) => {
-  const filteredAndSortedTransactions = transactions;
-
   const router = useRouter();
   const [selectedIds, setSelectedIds] = useState([]);
   const [sortConfig, setSortConfig] = useState({
@@ -72,6 +70,57 @@ const TransactionTable = ({ transactions }) => {
   const [searchTerm, setSearchTerm] = useState("");
   const [typeFilter, setTypeFilter] = useState("");
   const [recurringFilter, setRecurringFilter] = useState("");
+
+  const filteredAndSortedTransactions = useMemo(() => {
+    let result = [...transactions];
+
+    //apply search filter
+    if (searchTerm) {
+      const searchLower = searchTerm.toLowerCase();
+      result = result.filter((transactions) =>
+        transactions.description?.toLowerCase().includes(searchLower)
+      );
+    }
+
+    if (recurringFilter) {
+      result = result.filter((transactions) => {
+        if (recurringFilter === "recurring") {
+          return transactions.isRecurring;
+        } else {
+          return !transactions.isRecurring;
+        }
+      });
+    }
+
+    if (typeFilter) {
+      result = result.filter(
+        (transactions) => transactions.type === typeFilter
+      );
+    }
+
+    //apply sorting
+    result.sort((a, b) => {
+      let comparision = 0;
+      switch (sortConfig.field) {
+        case "date":
+          comparision = new Date(a.date) - new Date(b.date);
+          break;
+        case "amount":
+          comparision = a.amount - b.amount;
+          break;
+        case "category":
+          comparision = a.category.localeCompare(b.category);
+          break;
+
+        default:
+          comparision = 0;
+      }
+
+      return sortConfig.direction === "asc" ? comparision : -comparision;
+    });
+
+    return result;
+  }, [transactions, searchTerm, typeFilter, recurringFilter, sortConfig]);
 
   // console.log(selectedIds);
 
@@ -103,11 +152,11 @@ const TransactionTable = ({ transactions }) => {
 
   const handleBulkDelete = () => {};
 
-  const handleClearFilters =()=>{
+  const handleClearFilters = () => {
     setSearchTerm("");
     setTypeFilter("");
     setRecurringFilter("");
-    setSelectedIds([]); 
+    setSelectedIds([]);
   };
 
   return (
@@ -154,15 +203,20 @@ const TransactionTable = ({ transactions }) => {
                 size="sm"
                 onClick={handleBulkDelete}
               >
-              <Trash className="h-4 w-4 mr-2"/>
+                <Trash className="h-4 w-4 mr-2" />
                 Delete Selected ({selectedIds.length})
               </Button>
             </div>
           )}
 
           {(searchTerm || typeFilter || recurringFilter) && (
-            <Button variant="outline" size="icon" onClick={handleClearFilters} title="Clear Filters">
-               <X  className="w-5 h-4"></X>
+            <Button
+              variant="outline"
+              size="icon"
+              onClick={handleClearFilters}
+              title="Clear Filters"
+            >
+              <X className="w-5 h-4"></X>
             </Button>
           )}
         </div>
