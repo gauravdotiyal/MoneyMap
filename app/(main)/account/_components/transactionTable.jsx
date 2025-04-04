@@ -1,6 +1,6 @@
 "use client";
 
-import React from "react";
+import React, { useState } from "react";
 import {
   Tooltip,
   TooltipContent,
@@ -30,7 +30,13 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { format } from "date-fns";
 import { categoryColors } from "@/data/categories";
 import { Badge } from "@/components/ui/badge";
-import { Clock, MoreHorizontal, RefreshCw, Router } from "lucide-react";
+import {
+  ChevronUp,
+  ChevronDown,
+  Clock,
+  MoreHorizontal,
+  RefreshCw,
+} from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useRouter } from "next/navigation";
 
@@ -45,8 +51,39 @@ const TransactionTable = ({ transactions }) => {
   const filteredAndSortedTransactions = transactions;
 
   const router = useRouter();
+  const [selectedIds, setSelectedIds] = useState([]);
+  const [sortConfig, setSortConfig] = useState({
+    field: "date",
+    direction: "desc",
+  });
 
-  const handleSort = () => {};
+  // console.log(selectedIds);
+
+  const handleSort = (field) => {
+    setSortConfig((current) => ({
+      field,
+      direction:
+        current.field == field && current.direction === "asc" ? "desc" : "asc",
+    }));
+  };
+
+  const handleSelect = (id) => {
+    setSelectedIds(
+      (current) =>
+        current.includes(id) 
+          ? current.filter((item) => item != id) // if ID exists remove it
+          : [...current, id] // If ID not exists add it
+    );
+  };
+
+  const handleSelectAll = (id) => {
+    setSelectedIds(
+      (current) =>
+        current.length === filteredAndSortedTransactions.length
+          ? [] // if ID exists remove it
+          : filteredAndSortedTransactions.map((t) => t.id) // If ID not exists add it
+    );
+  };
 
   return (
     <div className="space-y-4">
@@ -59,26 +96,61 @@ const TransactionTable = ({ transactions }) => {
           <TableHeader>
             <TableRow>
               <TableHead className="w-[50px]">
-                <Checkbox />
+                <Checkbox
+                  className="cursor-pointer"
+                  onCheckedChange={handleSelectAll}
+                  checked={
+                    selectedIds.length ===
+                      filteredAndSortedTransactions.length &&
+                    filteredAndSortedTransactions.length > 0
+                  }
+                />
               </TableHead>
               <TableHead
                 className="cursor-pointer"
                 onClick={() => handleSort("date")}
               >
-                <div className="flex items-center"> Date</div>
+                <div className="flex items-center">
+                  {" "}
+                  Date{" "}
+                  {sortConfig.field === "date" &&
+                    (sortConfig.direction === "asc" ? (
+                      <ChevronUp className="ml-1 h-4 w-4" />
+                    ) : (
+                      <ChevronDown className="ml-1 h-4 w-4" />
+                    ))}{" "}
+                </div>
               </TableHead>
               <TableHead>Description</TableHead>
               <TableHead
                 className="cursor-pointer"
                 onClick={() => handleSort("category")}
               >
-                <div className="flex items-center"> Category</div>
+                <div className="flex items-center">
+                  {" "}
+                  Category{" "}
+                  {sortConfig.field === "category" &&
+                    (sortConfig.direction === "asc" ? (
+                      <ChevronUp className="ml-1 h-4 w-4" />
+                    ) : (
+                      <ChevronDown className="ml-1 h-4 w-4" />
+                    ))}
+                </div>
               </TableHead>
               <TableHead
                 className="cursor-pointer"
                 onClick={() => handleSort("amount")}
               >
-                <div className="flex items-center justify-end"> Amount</div>
+                <div className="flex items-center justify-end">
+                  {" "}
+                  Amount{" "}
+                  {sortConfig.field === "amount" &&
+                    (sortConfig.direction === "asc" ? (
+                      <ChevronUp className="ml-1 h-4 w-4" />
+                    ) : (
+                      <ChevronDown className="ml-1 h-4 w-4" />
+                    ))}
+                </div>
               </TableHead>
               <TableHead>Recurring</TableHead>
               <TableHead className="w-50px" />
@@ -98,7 +170,10 @@ const TransactionTable = ({ transactions }) => {
               filteredAndSortedTransactions.map((transactions) => (
                 <TableRow key={transactions.id}>
                   <TableCell>
-                    <Checkbox />
+                    <Checkbox
+                      onCheckedChange={() => handleSelect(transactions.id)}
+                      checked={selectedIds.includes(transactions.id)}
+                    />
                   </TableCell>
                   <TableCell>
                     {format(new Date(transactions.date), "PP")}
@@ -144,7 +219,7 @@ const TransactionTable = ({ transactions }) => {
                           </TooltipTrigger>
                           <TooltipContent>
                             <div className="text-sm">
-                              <div>Next Date:</div>
+                              <div className="font-medium">Next Date:</div>
                               <div>
                                 {format(
                                   new Date(transactions.nextRecurringDate),
