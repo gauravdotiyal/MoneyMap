@@ -18,6 +18,14 @@ import {
 } from "@/components/ui/dropdown-menu";
 
 import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+
+import {
   Table,
   TableBody,
   TableCaption,
@@ -36,9 +44,13 @@ import {
   Clock,
   MoreHorizontal,
   RefreshCw,
+  Search,
+  Trash,
+  X,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useRouter } from "next/navigation";
+import { Input } from "@/components/ui/input";
 
 const RECCURING_INTERVAL = {
   DAILY: "Daily",
@@ -57,6 +69,10 @@ const TransactionTable = ({ transactions }) => {
     direction: "desc",
   });
 
+  const [searchTerm, setSearchTerm] = useState("");
+  const [typeFilter, setTypeFilter] = useState("");
+  const [recurringFilter, setRecurringFilter] = useState("");
+
   // console.log(selectedIds);
 
   const handleSort = (field) => {
@@ -70,7 +86,7 @@ const TransactionTable = ({ transactions }) => {
   const handleSelect = (id) => {
     setSelectedIds(
       (current) =>
-        current.includes(id) 
+        current.includes(id)
           ? current.filter((item) => item != id) // if ID exists remove it
           : [...current, id] // If ID not exists add it
     );
@@ -85,9 +101,72 @@ const TransactionTable = ({ transactions }) => {
     );
   };
 
+  const handleBulkDelete = () => {};
+
+  const handleClearFilters =()=>{
+    setSearchTerm("");
+    setTypeFilter("");
+    setRecurringFilter("");
+    setSelectedIds([]); 
+  };
+
   return (
     <div className="space-y-4">
       {/* Filters  */}
+      <div className="flex flex-col sm:flex-row gap-4">
+        <div className="relative flex-1">
+          <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
+          <Input
+            placeholder="Search Transactions.."
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            className="pl-8"
+          />
+        </div>
+        <div className="flex gap-2">
+          <Select value={typeFilter} onValueChange={setTypeFilter}>
+            <SelectTrigger>
+              <SelectValue placeholder="All Types" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="INCOME">Income </SelectItem>
+              <SelectItem value="EXPENSE">Expense </SelectItem>
+            </SelectContent>
+          </Select>
+
+          <Select
+            value={recurringFilter}
+            onValueChange={(value) => setRecurringFilter(value)}
+          >
+            <SelectTrigger className="w-[130px]">
+              <SelectValue placeholder="All Transactions" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="recurring">Recurring Only </SelectItem>
+              <SelectItem value="non-recurring">Non-Recurring Only</SelectItem>
+            </SelectContent>
+          </Select>
+
+          {selectedIds.length > 0 && (
+            <div className="flex items-center gap-2">
+              <Button
+                variant="destructive"
+                size="sm"
+                onClick={handleBulkDelete}
+              >
+              <Trash className="h-4 w-4 mr-2"/>
+                Delete Selected ({selectedIds.length})
+              </Button>
+            </div>
+          )}
+
+          {(searchTerm || typeFilter || recurringFilter) && (
+            <Button variant="outline" size="icon" onClick={handleClearFilters} title="Clear Filters">
+               <X  className="w-5 h-4"></X>
+            </Button>
+          )}
+        </div>
+      </div>
 
       {/* Transactions  */}
       <div className="rounded-md border">
