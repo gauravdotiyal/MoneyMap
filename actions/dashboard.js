@@ -83,9 +83,8 @@ export async function getUserAccounts() {
     where: { clerkUserId: userId },
   });
 
-  if (!user) { 
+  if (!user) {
     throw new Error("User not found");
-
   }
 
   try {
