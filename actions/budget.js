@@ -1,7 +1,7 @@
 "use server";
 
 import { db } from "@/lib/prisma";
-import { auth } from "@clerk/nextjs/dist/types/server";
+import { auth } from "@clerk/nextjs/server";
 import { revalidatePath } from "next/cache";
 
 export async function getCurrentBudget(accountId) {
@@ -66,7 +66,7 @@ export async function getCurrentBudget(accountId) {
   }
 }
 
-export async function updateBudget(accountId) {
+export async function updateBudget(amount) {
   try {
     const { userId } = await auth();
     if (!userId) {
