@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import {
   Card,
   CardContent,
@@ -14,12 +14,16 @@ import { Check, Pencil, X } from "lucide-react";
 import useFetch from "@/hooks/useFetch";
 import { toast } from "sonner";
 import { updateBudget } from "@/actions/budget";
+import { Progress } from "@/components/ui/progress";
 
 const BudgetProgress = ({ initialBudget, currentExpenses }) => {
   const [isEditing, setIsEditing] = useState(false);
   const [newBudget, setNewBudget] = useState(
     initialBudget?.amount?.toString() || ""
   );
+
+  // console.log("Initial Budget", initialBudget); 
+  // console.log("Current Expense", currentExpenses);
 
   const {
     loading: isLoading,
@@ -28,12 +32,9 @@ const BudgetProgress = ({ initialBudget, currentExpenses }) => {
     error,
   } = useFetch(updateBudget);
 
-
   const percentageUsed = initialBudget
-    ? (currentExpenses / initialBudget?.amount) * 100
+    ? (currentExpenses / initialBudget.amount) * 100
     : 0;
-
-    
 
   const handleBudget = async () => {
     const amount = parseFloat(newBudget);
@@ -41,14 +42,14 @@ const BudgetProgress = ({ initialBudget, currentExpenses }) => {
       toast.error("Please Enter a Valid Amount");
       return;
     }
-  
+
     await updateBudgetFn(amount);
   };
 
   useEffect(() => {
     if (updatedBudget?.success) {
-        setIsEditing(false);
-        toast.success("Budget Updated Successfully");
+      setIsEditing(false);
+      toast.success("Budget Updated Successfully");
     }
   }, [updatedBudget]);
   useEffect(() => {
@@ -101,8 +102,10 @@ const BudgetProgress = ({ initialBudget, currentExpenses }) => {
               <>
                 <CardDescription>
                   {initialBudget
-                    ? `$${initialBudget.amount.toFixed(2)} spent`
-                    : "No Budget Set"}
+                    ? `Rs.${currentExpenses.toFixed(
+                        2
+                      )} of Rs.${initialBudget.amount.toFixed(2)} spent`
+                    : "No budget set"}
                 </CardDescription>
                 <Button
                   variant="ghost"
@@ -110,7 +113,14 @@ const BudgetProgress = ({ initialBudget, currentExpenses }) => {
                   onClick={() => setIsEditing(true)}
                   className="h-6 w-6 "
                 >
-                  <Pencil className="w-3 h-3" />
+                  <Pencil className="w-3 h-3" extrastyles={`${
+                // add to Progress component
+                percentageUsed >= 90
+                  ? "bg-red-500"
+                  : percentageUsed >= 75
+                    ? "bg-yellow-500"
+                    : "bg-green-500"
+              }`}/>
                 </Button>
               </>
             )}
@@ -119,7 +129,14 @@ const BudgetProgress = ({ initialBudget, currentExpenses }) => {
         <CardDescription> </CardDescription>
       </CardHeader>
       <CardContent>
-        <p>Card Content</p>
+        {initialBudget && (
+          <div className="space-y-2">
+            <Progress value={percentageUsed} />
+            <p className="text-xs text-muted-foreground text-right">
+              {percentageUsed.toFixed(1)}% used
+            </p>
+          </div>
+        )}
       </CardContent>
     </Card>
   );

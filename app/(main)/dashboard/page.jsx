@@ -10,9 +10,9 @@ import BudgetProgress from "./_components/budgetProgress";
 const DashboardPage = async () => {
   const accounts = await getUserAccounts();
 
-  const defaultAccount=accounts?.find((account)=>account.isDefault);
-
-  let budgetData=null;
+  const defaultAccount = accounts?.find((account) => account.isDefault);
+   
+  let budgetData = null;
   if (defaultAccount) {
     budgetData = await getCurrentBudget(defaultAccount.id);
   }
@@ -20,13 +20,13 @@ const DashboardPage = async () => {
   // console.log(accounts);
 
   return (
-    <div className="px-5">
-
-      {defaultAccount && <BudgetProgress
+    <div className="space-y-8">
+      {/* Budget Progress */}
+      <BudgetProgress
         initialBudget={budgetData?.budget}
-        currentExpenses={budgetData?.currentExpenses || 0}
-      />}
-      
+        currentExpenses={budgetData?.currentExpenses || 0}  
+      />
+
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
         <CreateAccountDrawer>
           <Card className="hover:shadow-md transition-shadow cursor-pointer border-dashed">

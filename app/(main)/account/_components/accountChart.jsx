@@ -64,7 +64,7 @@ const AccountChart = ({ transactions }) => {
     );
   }, [transactions, dateRange]);
 
-  console.log("This is filter data helo", filteredData);
+  // console.log("This is filter data helo", filteredData);
 
   const totals = useMemo(() => {
     return filteredData.reduce(

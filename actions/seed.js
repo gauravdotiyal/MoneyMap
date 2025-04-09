@@ -48,7 +48,7 @@ export async function seedTransactions() {
     let totalBalance = 0;
 
     for (let i = 90; i >= 0; i--) {
-      const date = subDays(new Date(), i);
+      const date = subDays(new Date(), i); 
 
       // Generate 1-3 transactions per day
       const transactionsPerDay = Math.floor(Math.random() * 3) + 1;
@@ -56,7 +56,7 @@ export async function seedTransactions() {
       for (let j = 0; j < transactionsPerDay; j++) {
         // 40% chance of income, 60% chance of expense
         const type = Math.random() < 0.4 ? "INCOME" : "EXPENSE";
-        const { category, amount } = getRandomCategory(type);
+        const { category, amount } = getRandomCategory(type); 
 
         const transaction = {
           id: crypto.randomUUID(),

@@ -12,7 +12,7 @@ import { Button } from "@/components/ui/button";
 import { LayoutDashboard, PenBox } from "lucide-react";
 import { checkUser } from "@/lib/checkUser";
 
-const Header = async() => {
+const Header = async () => {
   await checkUser();
 
   return (
