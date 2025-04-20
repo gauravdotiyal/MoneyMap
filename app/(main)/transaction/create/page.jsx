@@ -3,8 +3,8 @@ import { defaultCategories } from '@/data/categories';
 import React from 'react'
 import AddTransactionForm from '../_components/transactionForm';
 
-const AddTransactionPage = () => {
-    const accounts=getUserAccounts();
+const AddTransactionPage = async() => {
+    const accounts=await getUserAccounts();
 
   return (
     <div className="max-w-3xl mx-auto px-5">
