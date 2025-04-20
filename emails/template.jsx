@@ -13,7 +13,7 @@ import * as React from "react";
 export default function EmailTemplate({
   userName = "",
   type = "budget-alert",
-  data = {},
+  data = {  },
 }) {
   if (type === "monthly-report") {
   }
