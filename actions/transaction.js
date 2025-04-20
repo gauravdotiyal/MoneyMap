@@ -2,6 +2,11 @@ import { db } from "@/lib/prisma";
 import { auth } from "@clerk/nextjs/dist/types/server"; 
 import { revalidatePath } from "next/cache";
 
+const serializeAmount=(obj)=>({
+    ...obj,
+    amount:obj.amount.toNumber(),
+ })
+
 export async function createTransactions(data) {
   try {
     const { userId } = await auth();
@@ -59,7 +64,9 @@ export async function createTransactions(data) {
     revalidatePath(`/account/${transaction.accountId}`);
 
     return {success:true,data:serializeAmount(transaction)} 
-  } catch (error) {}
+  } catch (error) {
+    throw new Error(error.message);
+  }
 }
 
 const calculateNextrecurringDate = (startDate, interval) => {
