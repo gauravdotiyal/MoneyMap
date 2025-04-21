@@ -116,3 +116,7 @@ const calculateNextrecurringDate = (startDate, interval) => {
 
   return date;
 };
+
+export async function scanReceipt(file){
+  
+}
