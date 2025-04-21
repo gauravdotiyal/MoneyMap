@@ -1,7 +1,9 @@
 "use server"
 
+import aj from "@/lib/arcjet";
 import { db } from "@/lib/prisma";
-import { auth } from "@clerk/nextjs/server";
+import { request } from "@arcjet/next";
+import { auth } from "@clerk/nextjs/server"; 
 import { revalidatePath } from "next/cache";
 
 const serializeAmount=(obj)=>({
@@ -18,6 +20,29 @@ export async function createTransactions(data) {
     }
 
     // Add arcjet to use rate limitting
+     const req=await request();
+     // check rate limit 
+     const decision=await aj.protect(req,{
+      userId,
+      requested:1, // specify how many tokens to consume
+     })
+
+     if(decision.isDenied()){
+       if(decision.reason.isRateLimit()){
+         const {remaining,reset}=decision.reason;
+         console.error({
+          code:"RATE_LIMIT_EXCEEDED",
+          details:{
+            remaining,
+            resetInSeconds:reset,
+          }
+         });
+
+         throw new Error("Too many requests Please try again later.")
+       }
+
+       throw new Error("Request Blocked")
+     }
 
     const user = await db.user.findUnique({
       where: {

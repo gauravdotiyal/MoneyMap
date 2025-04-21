@@ -28,7 +28,6 @@ import { Switch } from "@/components/ui/switch";
 import { useRouter } from "next/navigation";
 import { formatDate } from "date-fns";
 import { toast } from "sonner";
- 
 
 const AddTransactionForm = ({ accounts, categories }) => {
   const router = useRouter();
