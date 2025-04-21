@@ -28,6 +28,7 @@ import { Switch } from "@/components/ui/switch";
 import { useRouter } from "next/navigation";
 import { formatDate } from "date-fns";
 import { toast } from "sonner";
+import ReceiptScanner from "./ReceiptScanner";
 
 const AddTransactionForm = ({ accounts, categories }) => {
   const router = useRouter();
@@ -83,14 +84,23 @@ const AddTransactionForm = ({ accounts, categories }) => {
     }
   }, [transactionResult, transactionLoading]);
 
+  const handleScanComplete= (scannedData)=>{
+    console.log("here is the scannedData", scannedData);
+  };
+
+
   return (
     <form
       className="max-w-2xl mx-auto p-6 bg-white rounded-lg shadow-md dark:bg-gray-800"
       onSubmit={handleSubmit(onSubmit)}
     >
+ 
       <h2 className="text-2xl font-bold text-gray-800 dark:text-white mb-6">
         Add New Transaction
       </h2>
+
+        {/* Receipt Scanner using AI  */}
+      <ReceiptScanner onScanComplete={handleScanComplete} />
 
       <div className="space-y-6">
         <div className="space-y-3">

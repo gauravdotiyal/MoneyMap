@@ -155,8 +155,8 @@ export async function scanReceipt(file) {
           data: base64String,
           mimeType: file.type,
         },
-        prompt,
       },
+      prompt,
     ]);
 
     // get some response from this api
