@@ -50,6 +50,7 @@ const AddTransactionForm = ({ accounts, categories }) => {
       accountId: accounts.find((ac) => ac.isDefault)?.id,
       date: new Date(),
       isRecurring: false,
+      recurringInterval: "",
     },
   });
 
@@ -84,22 +85,30 @@ const AddTransactionForm = ({ accounts, categories }) => {
     }
   }, [transactionResult, transactionLoading]);
 
-  const handleScanComplete= (scannedData)=>{
-    console.log("here is the scannedData", scannedData);
+  const handleScanComplete = (scannedData) => {
+    if (scannedData) {
+      setValue("amount", scannedData.amount.toString());
+      setValue("date", new Date(scannedData.date));
+      if (scannedData.description) {
+        setValue("description", scannedData.description);
+      }
+      if (scannedData.category) {
+        setValue("category", scannedData.category);
+      }
+      toast.success("Receipt scanned successfully");
+    }
   };
-
 
   return (
     <form
       className="max-w-2xl mx-auto p-6 bg-white rounded-lg shadow-md dark:bg-gray-800"
       onSubmit={handleSubmit(onSubmit)}
     >
- 
       <h2 className="text-2xl font-bold text-gray-800 dark:text-white mb-6">
         Add New Transaction
       </h2>
 
-        {/* Receipt Scanner using AI  */}
+      {/* Receipt Scanner using AI  */}
       <ReceiptScanner onScanComplete={handleScanComplete} />
 
       <div className="space-y-6">
@@ -301,8 +310,11 @@ const AddTransactionForm = ({ accounts, categories }) => {
               Recurring Interval
             </label>
             <Select
-              onValueChange={(value) => setValue("recurringInterval", value)}
+              onValueChange={(value) => {
+                setValue("recurringInterval", value, { shouldValidate: true });
+              }}
               defaultValue={getValues("recurringInterval")}
+              value={watch("recurringInterval")} // Add this line
             >
               <SelectTrigger className="w-full bg-gray-50 dark:bg-gray-700 border-gray-300 dark:border-gray-600">
                 <SelectValue placeholder="Select interval" />

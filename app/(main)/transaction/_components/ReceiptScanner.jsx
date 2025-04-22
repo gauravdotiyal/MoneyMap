@@ -31,7 +31,6 @@ const ReceiptScanner = ({ onScanComplete }) => {
     }
   }, [scanReceiptLoading, scannedData]);
 
-
   return (
     <div>
       <input
