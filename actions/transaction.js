@@ -184,49 +184,37 @@ export async function scanReceipt(file) {
 }
 
 export async function getTransaction(id) {
-  const userId = await auth();
-  if (!userId) {
-    throw new Error("User not authenticated");
-  }
+  const { userId } = await auth();
+  if (!userId) throw new Error("Unauthorized");
+
   const user = await db.user.findUnique({
-    where: {
-      clerkUserId: userId,
-    },
+    where: { clerkUserId: userId },
   });
 
-  if (!user) {
-    throw new Error("User not found");
-  }
+  if (!user) throw new Error("User not found");
 
-  const transactions = await db.transaction.findMany({
+  const transaction = await db.transaction.findUnique({
     where: {
       id,
       userId: user.id,
     },
   });
 
-  if (!transactions) {
-    throw new Error("Transaction not found");
-  }
+  if (!transaction) throw new Error("Transaction not found");
 
-  return serializeAmount(transactions);
+  return serializeAmount(transaction);
 }
 
-export default async function (id, data) {
+export async function updateTransaction(id, data) {
   try {
-    const userId = await auth();
-    if (!userId) {
-      throw new Error("User not authenticated");
-    }
+    const { userId } = await auth();
+    if (!userId) throw new Error("Unauthorized");
+
     const user = await db.user.findUnique({
-      where: {
-        clerkUserId: userId,
-      },
+      where: { clerkUserId: userId },
     });
 
-    if (!user) {
-      throw new Error("User not found");
-    }
+    if (!user) throw new Error("User not found");
 
     const originalTransaction = await db.transaction.findUnique({
       where: {
@@ -260,7 +248,7 @@ export default async function (id, data) {
           ...data,
           nextRecurringDate:
             data.isRecurring && data.recurringInterval
-              ? calculateNextRecurringDate(data.date, data.recurringInterval)
+              ? calculateNextrecurringDate(data.date, data.recurringInterval)
               : null,
         },
       });
@@ -286,3 +274,4 @@ export default async function (id, data) {
     throw new Error(error.message);
   }
 }
+

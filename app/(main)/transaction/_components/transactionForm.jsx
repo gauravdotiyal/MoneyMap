@@ -1,6 +1,6 @@
 "use client";
 
-import { createTransactions } from "@/actions/transaction";
+import  { createTransactions, updateTransaction } from "@/actions/transaction";
 import { transactionSchema } from "@/app/lib/schema";
 import useFetch from "@/hooks/useFetch";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -23,15 +23,23 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import { Calendar } from "@/components/ui/calendar";
-import { CalendarIcon } from "lucide-react";
+import { CalendarIcon, Loader } from "lucide-react";
 import { Switch } from "@/components/ui/switch";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { formatDate } from "date-fns";
 import { toast } from "sonner";
 import ReceiptScanner from "./ReceiptScanner";
 
-const AddTransactionForm = ({ accounts, categories }) => {
+const AddTransactionForm = ({
+  accounts,
+  categories,
+  editMode = false,
+  initialData = null,
+}) => {
   const router = useRouter();
+
+  const searchParams = useSearchParams();
+  const editId = searchParams.get("edit");
 
   const {
     register,
@@ -43,22 +51,36 @@ const AddTransactionForm = ({ accounts, categories }) => {
     reset,
   } = useForm({
     resolver: zodResolver(transactionSchema),
-    defaultValues: {
-      type: "EXPENSE",
-      amount: "",
-      description: "",
-      accountId: accounts.find((ac) => ac.isDefault)?.id,
-      date: new Date(),
-      isRecurring: false,
-      recurringInterval: "",
-    },
+    defaultValues:
+      editMode && initialData
+        ? {
+            type: initialData.type,
+            amount: initialData.amount.toString(),
+            description: initialData.description,
+            accountId: initialData.accountId,
+            category: initialData.category,
+            date: new Date(initialData.date),
+            isRecurring: initialData.isRecurring,
+            ...(initialData.recurringInterval && {
+              recurringInterval: initialData.recurringInterval,
+            }),
+          }
+        : {
+            type: "EXPENSE",
+            amount: "",
+            description: "",
+            accountId: accounts.find((ac) => ac.isDefault)?.id,
+            date: new Date(),
+            isRecurring: false,
+            recurringInterval: "",
+          },
   });
 
   const {
     loading: transactionLoading,
-    fn: transactinFn,
+    fn: transactionFn,
     data: transactionResult,
-  } = useFetch(createTransactions);
+  } = useFetch(editMode ? updateTransaction : createTransactions);
 
   const type = watch("type");
   const isRecurring = watch("isRecurring");
@@ -74,16 +96,24 @@ const AddTransactionForm = ({ accounts, categories }) => {
       amount: parseFloat(data.amount),
     };
 
-    transactinFn(formData);
+    if (editMode) {
+      transactionFn(editId, formData);
+    } else {
+      transactionFn(formData);
+    }
   };
 
   useEffect(() => {
     if (transactionResult?.success && !transactionLoading) {
-      toast.success("Transaction created successfully!");
+      toast.success(
+        editMode
+          ? "Transaction updated successfully"
+          : "Transaction created successfully"
+      );
       reset();
       router.push(`/account/${transactionResult.data.accountId}`);
     }
-  }, [transactionResult, transactionLoading]);
+  }, [transactionResult, transactionLoading, editMode]);
 
   const handleScanComplete = (scannedData) => {
     if (scannedData) {
@@ -109,7 +139,7 @@ const AddTransactionForm = ({ accounts, categories }) => {
       </h2>
 
       {/* Receipt Scanner using AI  */}
-      <ReceiptScanner onScanComplete={handleScanComplete} />
+     {!editMode && <ReceiptScanner onScanComplete={handleScanComplete} />}
 
       <div className="space-y-6">
         <div className="space-y-3">
@@ -368,7 +398,16 @@ const AddTransactionForm = ({ accounts, categories }) => {
             className="w-1/2 bg-blue-600 hover:bg-blue-700 text-white"
             disabled={transactionLoading}
           >
-            {transactionLoading ? "Creating..." : "Create Transaction"}
+            {transactionLoading ? (
+              <>
+                <Loader className="mr-2 h-4 w-4 animate-spin" />
+                {editMode ? "Updating..." : "Creating..."}
+              </>
+            ) : editMode ? (
+              "Update Transaction"
+            ) : (
+              "Create Transaction"
+            )}
           </Button>
         </div>
       </div>
