@@ -19,7 +19,7 @@ export default function Home() {
           <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
             {statsData.map((statsData, index) => (
               <div key={index} className="text-center">
-                <div className="text-4xl font-bold text-blue-600 mb-2">
+                <div className="text-4xl font-bold text-black mb-2">
                   {" "}
                   {statsData.value}
                 </div>
@@ -96,14 +96,13 @@ export default function Home() {
         </div>
       </section>
 
-      <section className="py-20 bg-blue-600">
+      <section className="py-20 bg-black">
         <div className="container mx-auto px-4 text-center">
           <h2 className="text-3xl font-bold text-center text-white mb-4">
             Ready to Take Control of Your Finances{" "}
           </h2>
           <p className="text-blue-100 mb-8 max-w-2xl mx-auto">
-            Join Thousands of Users who are managing their finances smarter with
-            wealth
+            Join Thousands of Users who are managing their finances smarter with MoneyMap
           </p>
           <Link href="/dashboard">
             <Button

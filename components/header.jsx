@@ -11,6 +11,7 @@ import React from "react";
 import { Button } from "@/components/ui/button";
 import { LayoutDashboard, PenBox } from "lucide-react";
 import { checkUser } from "@/lib/checkUser";
+import { ModeToggle } from "./ModeToggle";
 
 const Header = async () => {
   await checkUser();
@@ -27,6 +28,7 @@ const Header = async () => {
             className="h-12 w-auto object-contain"
           />
         </Link>
+
         <div className="flex  items-center space-x-4">
           <SignedIn>
             <Link
@@ -61,6 +63,7 @@ const Header = async () => {
               }}
             />
           </SignedIn>
+          <ModeToggle className="ml-10" />
         </div>
       </nav>
     </div>
