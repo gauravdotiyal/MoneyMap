@@ -1,11 +1,12 @@
-import { Geist, Geist_Mono, Inter } from "next/font/google";
+import {   Inter } from "next/font/google";
 import "./globals.css";
 import Header from "@/components/header";
 import { ClerkProvider } from '@clerk/nextjs'
 import { Toaster } from "sonner";
 import { ThemeProvider } from "@/components/theme-provider"; // Make sure this exists
 
-const inter = Inter({ subset: ["latin"] });
+const inter = Inter({ subsets: ["latin"] });
+
 
 export const metadata = {
   title: "Money Map",
@@ -32,7 +33,7 @@ export default function RootLayout({ children }) {
                 <p>© 2025 Money Map</p>
               </div>
             </footer>
-          </ThemeProvider>
+          </ThemeProvider>  
         </body>
       </html>
     </ClerkProvider>
