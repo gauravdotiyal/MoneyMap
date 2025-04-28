@@ -72,7 +72,7 @@ const AddTransactionForm = ({
             accountId: accounts.find((ac) => ac.isDefault)?.id,
             date: new Date(),
             isRecurring: false,
-            recurringInterval: "",
+            recurringInterval: "DAILY",
           },
   });
 
@@ -93,7 +93,7 @@ const AddTransactionForm = ({
   const onSubmit = async (data) => {
     const formData = {
       ...data,
-      amount: parseFloat(data.amount),
+      amount: parseFloat(data.amount), 
     };
 
     if (editMode) {
@@ -341,7 +341,7 @@ const AddTransactionForm = ({
             </label>
             <Select
               onValueChange={(value) => {
-                setValue("recurringInterval", value, { shouldValidate: true });
+                setValue("recurringInterval", value);
               }}
               defaultValue={getValues("recurringInterval")}
               value={watch("recurringInterval")} // Add this line
@@ -351,25 +351,25 @@ const AddTransactionForm = ({
               </SelectTrigger>
               <SelectContent className="bg-white dark:bg-gray-700 border-gray-300 dark:border-gray-600">
                 <SelectItem
-                  value="DAILY"
+                  value='DAILY'
                   className="hover:bg-gray-100 dark:hover:bg-gray-600"
                 >
                   Daily
                 </SelectItem>
                 <SelectItem
-                  value="WEEKLY"
+                  value='WEEKLY'
                   className="hover:bg-gray-100 dark:hover:bg-gray-600"
                 >
                   Weekly
                 </SelectItem>
                 <SelectItem
-                  value="MONTHLY"
+                  value='MONTHLY'
                   className="hover:bg-gray-100 dark:hover:bg-gray-600"
                 >
                   Monthly
                 </SelectItem>
                 <SelectItem
-                  value="YEARLY"
+                  value='YEARLY'
                   className="hover:bg-gray-100 dark:hover:bg-gray-600"
                 >
                   Yearly
