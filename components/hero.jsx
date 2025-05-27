@@ -44,7 +44,7 @@ const HeroSection = () => {
               Get Started{" "}
             </Button>
           </Link>
-          <Link href={"/https://shorturl.at/pjFwK"}>
+          <Link href={"https://shorturl.at/pjFwK"}>
             <Button size="lg" variant="outline" className="px-8">
               Demo Video
             </Button>
