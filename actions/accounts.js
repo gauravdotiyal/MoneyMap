@@ -31,7 +31,8 @@ export async function updateDefaultAccount(accountId) {
     if (!user) {
       throw new Error("User Not Found");
     }
-
+     
+    // make all the default accounts as false  
     await db.account.updateMany({
       where: {
         userId: user.id,
